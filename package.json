@@ -1,0 +1,26 @@
+{
+  "name": "umi-ui-plugin-tasks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"tnpm run build:watch\" \"CURRENT_PROJECT=examples umi ui\"",
+    "build": "node scripts/build.js",
+    "build:watch": "node scripts/build.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ikobe/umi-ui-plugin-tasks.git"
+  },
+  "author": "ikobe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ikobe/umi-ui-plugin-tasks/issues"
+  },
+  "homepage": "https://github.com/ikobe/umi-ui-plugin-tasks#readme",
+  "devDependencies": {
+    "concurrently": "^4.1.1",
+    "father-build": "^1.4.0",
+    "umi": "^2.8.16"
+  }
+}
