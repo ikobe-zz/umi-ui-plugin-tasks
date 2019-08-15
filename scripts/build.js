@@ -1,44 +1,39 @@
+const FATHER_BUILD_BIN = require.resolve('father-build/bin/father-build.js');
 const { fork } = require('child_process');
 const { join } = require('path');
-const FATHER_BUILD_BIN = require.resolve('father-build/bin/father-build.js');
 
 const isWatchMode = process.argv.includes('-w') || process.argv.includes('--watch');
 
-const builds = [
-  {
-    name: 'server build',
-    cwd: join(__dirname, '..'),
-    args: isWatchMode ? [ '--watch' ] : [],
-  },
-  {
-    name: 'client build',
-    cwd: join(__dirname, '../src/ui'),
-    args: isWatchMode ? [ '--watch' ] : [],
-  },
-];
-
-const buildProcess = ({ name, cwd, args = [] }) => {
-  console.log(`Begin ${name}`);
-  return new Promise((resolve, reject) => {
-    const cp = fork(
-      FATHER_BUILD_BIN,
-      args,
-      {
-        cwd,
-      },
-    );
-    cp.on('exit', (code) => {
-      if (code === 0) {
-        resolve();
-        return;
-      }
-      reject(`Build ${name} error`);
-    });
+const sleep = async (time) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, 3000);
   });
 };
 
-(async () => {
-  for (const build of builds) {
-    await buildProcess(build);
+const BUILD_CONFIGS = [
+  {
+    name: 'client',
+    cwd: join(__dirname, '../src'),
+    args: isWatchMode ? [ '--watch' ] : [],
+  },
+  {
+    name: 'server',
+    cwd: join(__dirname, '..'),
+    args: isWatchMode ? [ '--watch' ] : [],
+    before: async () => { await sleep(1000); }
   }
-})();
+];
+
+BUILD_CONFIGS.forEach(async ({ name, cwd, args, before }) => {
+  console.log(`Begin ${name} build`);
+  if (before) {
+    await before();
+  }
+  const cp = fork(FATHER_BUILD_BIN, args, { cwd, });
+  cp.on('exit', code => {
+    process.exit(code);
+  });
+  process.on('exit', () => {
+    cp.kill('SIGINT');
+  });
+});

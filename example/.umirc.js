@@ -1,5 +1,7 @@
 export default {
-  plugins: [
-    '../lib/index'
-  ],
-}
+  plugins: ['../lib/index'],
+  runtimePublicPath: false,
+  history: 'hash',
+  publicPath: '/',
+};
+
